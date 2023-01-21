@@ -6,14 +6,14 @@ use App\Models\Traits\HasHashedMediaTrait;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+// use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class BaseModel extends Model implements HasMedia
 {
-    use SoftDeletes;
+    // use SoftDeletes;
     use HasHashedMediaTrait;
 
     protected $guarded = [
@@ -61,14 +61,14 @@ class BaseModel extends Model implements HasMedia
     public function registerMediaConversions(Media $media = null): void
     {
         $this->addMediaConversion('thumb')
-              ->width(250)
-              ->height(250)
-              ->quality(70);
+            ->width(250)
+            ->height(250)
+            ->quality(70);
 
         $this->addMediaConversion('thumb300')
-              ->width(300)
-              ->height(300)
-              ->quality(70);
+            ->width(300)
+            ->height(300)
+            ->quality(70);
     }
 
     /**
@@ -78,7 +78,7 @@ class BaseModel extends Model implements HasMedia
      */
     public function getTableColumns()
     {
-        $table_info_columns = DB::select(DB::raw('SHOW COLUMNS FROM '.$this->getTable()));
+        $table_info_columns = DB::select(DB::raw('SHOW COLUMNS FROM ' . $this->getTable()));
 
         return $table_info_columns;
     }
@@ -104,7 +104,7 @@ class BaseModel extends Model implements HasMedia
                 break;
 
             default:
-                return '<span class="badge bg-primary">Status:'.$this->status.'</span>';
+                return '<span class="badge bg-primary">Status:' . $this->status . '</span>';
                 break;
         }
     }

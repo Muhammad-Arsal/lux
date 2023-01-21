@@ -117,7 +117,7 @@ class CategoryController extends Controller
     //  */
     public function update(Request $request, $id)
     {
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             'name' => ['required', Rule::unique('product_categories')->ignore($id)],
         ]);
 
@@ -145,7 +145,7 @@ class CategoryController extends Controller
         $category = $module_model::where('id', $id)->first();
 
         $child_cat = $module_model::where('parent_id', $id)->get();
-        if(!$child_cat->isEmpty()) {
+        if (!$child_cat->isEmpty()) {
             Flash::error("<i class='fas fa-times'></i> This category has child categories, Delete them first!")->important();
 
             return redirect()->route('backend.product.category.index');

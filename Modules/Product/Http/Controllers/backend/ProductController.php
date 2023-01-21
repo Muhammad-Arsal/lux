@@ -54,7 +54,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             'product_name' => 'required',
             'product_cat_id' => 'required',
             'desc' => 'required',
@@ -75,43 +75,42 @@ class ProductController extends Controller
             'product_picture.required' => "The Picture field is required",
         ]);
 
-        $validator->sometimes( 'offer_type', 'required',function($request){
-            return  ($request->offer_availability == 'yes' ? true : false);
+        $validator->sometimes('offer_type', 'required', function ($request) {
+            return ($request->offer_availability == 'yes' ? true : false);
         });
 
-        $validator->sometimes( 'on_purchase_of', 'required',function($request){
-            return  ($request->offer_availability == 'yes' ? true : false);
+        $validator->sometimes('on_purchase_of', 'required', function ($request) {
+            return ($request->offer_availability == 'yes' ? true : false);
         });
 
-        $validator->sometimes( 'free_prod_qty', 'required',function($request){
-            return  ($request->offer_availability == 'yes' && $request->offer_type == 'free' ? true : false);
+        $validator->sometimes('free_prod_qty', 'required', function ($request) {
+            return ($request->offer_availability == 'yes' && $request->offer_type == 'free' ? true : false);
         });
 
         if ($validator->fails()) {
             return redirect()->back()
-                        ->withErrors($validator)
-                        ->withInput();
+                ->withErrors($validator)
+                ->withInput();
         }
 
         $module_model = $this->module_model;
 
 
         $product_image_name = "";
-        if($request->hasFile('product_picture')){
+        if ($request->hasFile('product_picture')) {
             $product_image = $request->file('product_picture');
-            if(!empty($product_image)){
+            if (!empty($product_image)) {
                 $ext =  strtolower($product_image->getClientOriginalExtension());
                 $directory = public_path('uploads/product/');
-                if(!$directory) mkdir($directory,0777);
+                if (!$directory) mkdir($directory, 0777);
 
                 //  if(isset($admin->profile) && !empty($admin->profile->profile_image)){   
                 //     $existingProfileImage = $directory.$admin->profile->profile_image;
                 //     if(file_exists($existingProfileImage)) unlink($existingProfileImage);
                 // }
-                $product_image_name =  base64_encode('product-'.time()).'.'.$ext;
+                $product_image_name =  base64_encode('product-' . time()) . '.' . $ext;
                 $product_image->move($directory, $product_image_name);
             }
-               
         }
 
         $product = $module_model::create([
@@ -126,28 +125,27 @@ class ProductController extends Controller
             'free_qty' => $request->free_prod_qty,
         ]);
 
-        if($product) {
+        if ($product) {
             $variant_image_name = "";
-            if($request->hasFile('variant_picture')){
+            if ($request->hasFile('variant_picture')) {
                 $variant_image = $request->file('variant_picture');
-                if(!empty($variant_image)){
+                if (!empty($variant_image)) {
                     $ext =  strtolower($variant_image->getClientOriginalExtension());
                     $directory = public_path('uploads/product/');
-                    if(!$directory) mkdir($directory,0777);
-    
+                    if (!$directory) mkdir($directory, 0777);
+
                     //  if(isset($admin->profile) && !empty($admin->profile->profile_image)){   
                     //     $existingProfileImage = $directory.$admin->profile->profile_image;
                     //     if(file_exists($existingProfileImage)) unlink($existingProfileImage);
                     // }
-                    $variant_image_name =  base64_encode('product-'.time()).'.'.$ext;
+                    $variant_image_name =  base64_encode('product-' . time()) . '.' . $ext;
                     $variant_image->move($directory, $variant_image_name);
                 }
-                   
             }
 
             $discount_percentage = 0;
-            if($request->discount_price != 0) {
-                $discount_percentage = (int)(($request->variant_price - $request->discount_price)/$request->variant_price)*100;
+            if ($request->discount_price != 0) {
+                $discount_percentage = (int)(($request->variant_price - $request->discount_price) / $request->variant_price) * 100;
             }
 
             $productVariant = ProductVariants::create([
@@ -204,7 +202,7 @@ class ProductController extends Controller
      */
     public function updateProduct(Request $request, $id)
     {
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             'product_name' => 'required',
             'product_cat_id' => 'required',
             'desc' => 'required',
@@ -217,22 +215,22 @@ class ProductController extends Controller
             'desc.required' => "The Description field is required",
         ]);
 
-        $validator->sometimes( 'offer_type', 'required',function($request){
-            return  ($request->offer_availability == 'yes' ? true : false);
+        $validator->sometimes('offer_type', 'required', function ($request) {
+            return ($request->offer_availability == 'yes' ? true : false);
         });
 
-        $validator->sometimes( 'on_purchase_of', 'required',function($request){
-            return  ($request->offer_availability == 'yes' ? true : false);
+        $validator->sometimes('on_purchase_of', 'required', function ($request) {
+            return ($request->offer_availability == 'yes' ? true : false);
         });
 
-        $validator->sometimes( 'free_prod_qty', 'required',function($request){
-            return  ($request->offer_availability == 'yes' && $request->offer_type == 'free' ? true : false);
+        $validator->sometimes('free_prod_qty', 'required', function ($request) {
+            return ($request->offer_availability == 'yes' && $request->offer_type == 'free' ? true : false);
         });
 
         if ($validator->fails()) {
             return redirect()->back()
-                        ->withErrors($validator)
-                        ->withInput();
+                ->withErrors($validator)
+                ->withInput();
         }
 
         $module_model = $this->module_model;
@@ -241,18 +239,18 @@ class ProductController extends Controller
 
 
         $product_image_name = "";
-        if($request->hasFile('product_picture')){
+        if ($request->hasFile('product_picture')) {
             $product_image = $request->file('product_picture');
-            if(!empty($product_image)){
+            if (!empty($product_image)) {
                 $ext =  strtolower($product_image->getClientOriginalExtension());
                 $directory = public_path('uploads/product/');
-                if(!$directory) mkdir($directory,0777);
+                if (!$directory) mkdir($directory, 0777);
 
-                 if(isset($getProduct->picture)){   
-                    $existingProfileImage = $directory.$getProduct->picture;
-                    if(file_exists($existingProfileImage)) unlink($existingProfileImage);
+                if (isset($getProduct->picture)) {
+                    $existingProfileImage = $directory . $getProduct->picture;
+                    if (file_exists($existingProfileImage)) unlink($existingProfileImage);
                 }
-                $product_image_name =  base64_encode('product-'.time()).'.'.$ext;
+                $product_image_name =  base64_encode('product-' . time()) . '.' . $ext;
                 $product_image->move($directory, $product_image_name);
             }
 
@@ -267,7 +265,6 @@ class ProductController extends Controller
                 'on_purchase' => $request->on_purchase_of,
                 'free_qty' => $request->free_prod_qty,
             ]);
-               
         } else {
             $product = $module_model::where('id', $id)->update([
                 'name' => $request->product_name,
@@ -281,7 +278,7 @@ class ProductController extends Controller
             ]);
         }
 
-        if($product) {
+        if ($product) {
 
             Flash::success("<i class='fas fa-check'></i> Product Updated")->important();
 
@@ -293,7 +290,8 @@ class ProductController extends Controller
         }
     }
 
-    public function addVariant($id) {
+    public function addVariant($id)
+    {
         $module_model = $this->module_model;
 
         $product_id = $id;
@@ -301,8 +299,9 @@ class ProductController extends Controller
         return view('product::product.addVariant', compact('product_id'));
     }
 
-    public function storeVariant($id, Request $request) {
-        $validator = Validator::make($request->all(),[
+    public function storeVariant($id, Request $request)
+    {
+        $validator = Validator::make($request->all(), [
             'variant_name' => 'required',
             'variant_description' => 'required',
             'variant_price' => 'required',
@@ -316,32 +315,31 @@ class ProductController extends Controller
 
         if ($validator->fails()) {
             return redirect()->back()
-                        ->withErrors($validator)
-                        ->withInput();
+                ->withErrors($validator)
+                ->withInput();
         }
 
         $module_model = $this->module_model;
         $variant_image_name = "";
-        if($request->hasFile('variant_picture')){
+        if ($request->hasFile('variant_picture')) {
             $variant_image = $request->file('variant_picture');
-            if(!empty($variant_image)){
+            if (!empty($variant_image)) {
                 $ext =  strtolower($variant_image->getClientOriginalExtension());
                 $directory = public_path('uploads/product/');
-                if(!$directory) mkdir($directory,0777);
+                if (!$directory) mkdir($directory, 0777);
 
                 //  if(isset($admin->profile) && !empty($admin->profile->profile_image)){   
                 //     $existingProfileImage = $directory.$admin->profile->profile_image;
                 //     if(file_exists($existingProfileImage)) unlink($existingProfileImage);
                 // }
-                $variant_image_name =  base64_encode('product-'.time()).'.'.$ext;
+                $variant_image_name =  base64_encode('product-' . time()) . '.' . $ext;
                 $variant_image->move($directory, $variant_image_name);
             }
-                
         }
 
         $discount_percentage = 0;
-        if($request->discount_price != 0) {
-            $discount_percentage = (int)(($request->variant_price - $request->discount_price)/$request->variant_price)*100;
+        if ($request->discount_price != 0) {
+            $discount_percentage = (int)(($request->variant_price - $request->discount_price) / $request->variant_price) * 100;
         }
 
         $productVariant = ProductVariants::create([
@@ -356,7 +354,7 @@ class ProductController extends Controller
             'size' => $request->size,
         ]);
 
-        if($productVariant) {
+        if ($productVariant) {
             Flash::success("<i class='fas fa-check'></i> New Product Variant Added")->important();
 
             return redirect()->route('backend.product.index');
@@ -367,7 +365,8 @@ class ProductController extends Controller
         }
     }
 
-    public function editVariant($product_id, $id) {
+    public function editVariant($product_id, $id)
+    {
         $module_model = $this->module_model;
 
         $product = ProductVariants::where('id', $id)->first();
@@ -375,8 +374,9 @@ class ProductController extends Controller
         return view('product::product.editVariant', compact('product_id', 'product'));
     }
 
-    public function updateVariant($product_id, $id, Request $request) {
-        $validator = Validator::make($request->all(),[
+    public function updateVariant($product_id, $id, Request $request)
+    {
+        $validator = Validator::make($request->all(), [
             'variant_name' => 'required',
             'variant_description' => 'required',
             'variant_price' => 'required',
@@ -390,8 +390,8 @@ class ProductController extends Controller
 
         if ($validator->fails()) {
             return redirect()->back()
-                        ->withErrors($validator)
-                        ->withInput();
+                ->withErrors($validator)
+                ->withInput();
         }
 
         $module_model = $this->module_model;
@@ -399,26 +399,26 @@ class ProductController extends Controller
         $getProduct = ProductVariants::where('id', $id)->first();
 
         $variant_image_name = "";
-        if($request->hasFile('variant_picture')){
+        if ($request->hasFile('variant_picture')) {
             $variant_image = $request->file('variant_picture');
-            if(!empty($variant_image)){
+            if (!empty($variant_image)) {
                 $ext =  strtolower($variant_image->getClientOriginalExtension());
                 $directory = public_path('uploads/product/');
-                if(!$directory) mkdir($directory,0777);
+                if (!$directory) mkdir($directory, 0777);
 
-                if(isset($getProduct->picture)){   
-                    $existingProfileImage = $directory.$getProduct->picture;
-                    if(file_exists($existingProfileImage)) unlink($existingProfileImage);
+                if (isset($getProduct->picture)) {
+                    $existingProfileImage = $directory . $getProduct->picture;
+                    if (file_exists($existingProfileImage)) unlink($existingProfileImage);
                 }
-                $variant_image_name =  base64_encode('product-'.time()).'.'.$ext;
+                $variant_image_name =  base64_encode('product-' . time()) . '.' . $ext;
                 $variant_image->move($directory, $variant_image_name);
             }
 
             $discount_percentage = 0;
-            if($request->discount_price != 0) {
-                $discount_percentage = (int)(($request->variant_price - $request->discount_price)/$request->variant_price)*100;
+            if ($request->discount_price != 0) {
+                $discount_percentage = (int)(($request->variant_price - $request->discount_price) / $request->variant_price) * 100;
             }
-    
+
             $productVariant = ProductVariants::where('id', $id)->update([
                 'name' => $request->variant_name,
                 'description' => $request->variant_description,
@@ -430,13 +430,12 @@ class ProductController extends Controller
                 'featured' => $request->featured,
                 'size' => $request->size,
             ]);
-                
         } else {
             $discount_percentage = 0;
-            if($request->discount_price != 0) {
-                $discount_percentage = (int)(($request->variant_price - $request->discount_price)/$request->variant_price)*100;
+            if ($request->discount_price != 0) {
+                $discount_percentage = (int)(($request->variant_price - $request->discount_price) / $request->variant_price) * 100;
             }
-    
+
             $productVariant = ProductVariants::where('id', $id)->update([
                 'name' => $request->variant_name,
                 'description' => $request->variant_description,
@@ -448,7 +447,7 @@ class ProductController extends Controller
             ]);
         }
 
-        if($productVariant) {
+        if ($productVariant) {
             Flash::success("<i class='fas fa-check'></i> Product Variant Updated")->important();
 
             return redirect()->route('backend.product.index');
@@ -468,10 +467,11 @@ class ProductController extends Controller
     {
         //
     }
-    
-    public function productPreview() {
-        $products = Product::orderBy('id', 'asc')->get();
-        
+
+    public function productPreview()
+    {
+        $products = ProductVariants::orderBy('id', 'asc')->get();
+
         return view('product::product.preview', compact('products'));
     }
 }

@@ -3,5 +3,8 @@
     "Tag": true,
     "Comment": true,
     "SomeStuffss": true,
-    "Product": true
+    "Product": true,
+    "Invoices": true,
+    "Users": true,
+    "Customers": true
 }
