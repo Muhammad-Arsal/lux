@@ -28,7 +28,7 @@
             <div class="container mt-1">
                 <div class="row border border-1  p-2">
                     <div class="col-6">
-                        <p class="text-end m-2 fs-3">Customers:</p>
+                        <p class="text-end m-2">Customers:</p>
                     </div>
                     <div class="col-6 m-0">
                         <select class="form-select form-control" name="" id="">
@@ -51,7 +51,7 @@
                         <p class="text-end m-2">Products:</p>
                     </div>
                     <div class="col-7">
-                        <input class="form-control rounded-0 product" type="text" name="product" value=""
+                        <input class="form-control rounded-0 product"type="text" name="product" value=""
                             id="autoComplete">
                     </div>
                     <div class="col-2">
@@ -134,17 +134,21 @@
 
 @push('before-styles')
     <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.7/dist/css/autoComplete.min.css">
+        href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.7/dist/css/autoComplete.02.min.css">
 @endpush
 
 @push('after-scripts')
-    <script>
+    <script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.7/dist/autoComplete.min.js"></script>
+    <script type="text/javascript">
+        var searchedData = [];
         $(document).ready(function() {
             var counting = 1;
+            var route;
+
+            //Add button function
             $('.add').on('click', function() {
                 var current = $(this);
                 var current_value = $(this).parent().parent().find('.product').val();
-                console.log(current_value);
 
                 var route = "{{ route('backend.invoices.fetch', ['id' => 'replace']) }}";
                 route = route.replace('replace', current_value);
@@ -154,10 +158,7 @@
                     url: route,
                     success: function(response) {
                         var all = response.relativeProducts;
-                        console.log(all);
-
                         $(all).each(function(index, element) {
-                            console.log('here');
                             var size = '--';
                             if (element.size != null) {
                                 size = element.size;
@@ -172,11 +173,12 @@
                             );
                         });
                         $('.partition').css('display', 'block');
-
                     }
                 });
             });
 
+
+            //Quick form addition
             $(".newAddition").click(function(e) {
                 e.preventDefault();
                 var name = $(this).parent().parent().find('.name').val();
@@ -192,18 +194,61 @@
                 );
                 $('.partition').css('display', 'block');
             });
+
+            // //input field entry search
+            // $(".product").keyup(function(e) {
+            //     e.preventDefault();
+            //     console.log(searchedData);
+            //     searchedData = [];
+            //     var current_value = $(this).val();
+
+            //     var route = "{{ route('backend.invoices.search', ['current' => 'replace']) }}";
+            //     route = route.replace('replace', current_value);
+
+            //     $.ajax({
+            //         type: "get",
+            //         url: route,
+            //         success: function(response) {
+            //             var collected = response.searchedProducts;
+            //             $(collected).each(function(index, element) {
+            //                 searchedData.push(element.name);
+
+            //             });
+            //         }
+            //     });
+            // });
+            // console.log(searchedData);
+
         });
-    </script>
 
 
-    <script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.7/dist/autoComplete.min.js"></script>
-    <script>
+        $(".product").keyup(function(e) {
+            var current_value = $(this).val();
+            route = "{{ route('backend.invoices.search', ['current' => 'replace']) }}";
+            route = route.replace('replace', current_value);
+        });
         const autoCompleteJS = new autoComplete({
-            placeHolder: "Search for Products...",
+            name: "autoComplete",
+            placeHolder: "Search for Product...",
             data: {
-                src: ["Sauce - Thousand Island", "Wild Boar - Tenderloin", "Goat - Whole Cut"]
-            }
+                src: async (query) => {
+                    try {
+                        // Fetch Data from external Source
+                        const source = await fetch(route);
+                        // Data should be an array of `Objects` or `Strings`
+                        const data = await source.json();
 
+                        return data;
+                    } catch (error) {
+                        return error;
+                    }
+                },
+                // Data source 'Object' key to be searched
+                keys: ["name"],
+            },
+            resultItem: {
+                highlight: true,
+            },
         });
     </script>
 @endpush

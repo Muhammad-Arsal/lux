@@ -2,6 +2,7 @@
 
 namespace Modules\Invoices\Http\Controllers;
 
+use Hamcrest\Type\IsNumeric;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -29,8 +30,20 @@ class InvoicesController extends Controller
     public function fetch($id)
     {
         $product_id = $id;
-        $collected = \DB::table('product_variants')->where('id', $product_id)->first();
-        return response()->json(["relativeProducts" => $collected]);
+        if ($product_id == is_numeric($product_id)) {
+            $collected = \DB::table('product_variants')->where('id', $product_id)->first();
+            return response()->json(["relativeProducts" => $collected]);
+        } else {
+            $collected = \DB::table('product_variants')->where('name', $product_id)->first();
+            return response()->json(["relativeProducts" => $collected]);
+        }
+    }
+
+    public function search($current)
+    {
+        $current_string = $current;
+        $collected = \DB::table('product_variants')->select("name")->where('name', 'LIKE', "%{$current_string}%")->get();
+        return response()->json($collected);
     }
 
     /**

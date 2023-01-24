@@ -20,4 +20,5 @@ Route::group(['namespace' => '\Modules\Invoices\Http\Controllers', 'as' => 'back
     Route::get('invoices', ['as' => "invoices.view", 'uses' => 'InvoicesController@index']);
     Route::get('invoices/create', ['as' => "invoices.add", 'uses' => 'InvoicesController@create']);
     Route::get('invoices/{id}/fetch', ['as' => "invoices.fetch", 'uses' => 'InvoicesController@fetch']);
+    Route::get('invoices/{current}/search', ['as' => "invoices.search", 'uses' => 'InvoicesController@search']);
 });
