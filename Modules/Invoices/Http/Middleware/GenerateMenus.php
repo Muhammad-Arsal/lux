@@ -15,22 +15,70 @@ class GenerateMenus
      */
     public function handle($request, Closure $next)
     {
-        /*
-         *
-         * Module Menu for Admin Backend
-         *
-         * *********************************************************************
-         */
         \Menu::make('admin_sidebar', function ($menu) {
 
-            // comments
-            $menu->add('<i class="nav-icon fas fa-comments"></i> Invoices', [
+            // Articles Dropdown
+            $articles_menu = $menu->add('<i class="nav-icon fa fa-shopping-bag"></i> ' . __('Invoices'), [
+                'class' => 'nav-group',
+            ])
+                ->data([
+                    'order'         => 100,
+                    'activematches' => [
+                        'admin/invoices*',
+                    ],
+                    'permission' => [],
+                ]);
+            $articles_menu->link->attr([
+                'class' => 'nav-link nav-group-toggle',
+                'href'  => '#',
+            ]);
+
+            // Submenu: Posts
+            // $articles_menu->add('<i class="nav-icon fas fa fa-shopping-bag"></i> '.__('Product'), [
+            //     'route' => 'backend.posts.index',
+            //     'class' => 'nav-item',
+            // ])
+            // ->data([
+            //     'order'         => 82,
+            //     'activematches' => 'admin/posts*',
+            //     'permission'    => ['edit_posts'],
+            // ])
+            // ->link->attr([
+            //     'class' => 'nav-link',
+            // ]);
+            //Submenu: Products
+            $articles_menu->add('<i class="nav-icon fa fa-shopping-bag"></i> ' . __('Invoices'), [
                 'route' => 'backend.invoices.view',
                 'class' => 'nav-item',
             ])
                 ->data([
-                    'order'         => 100,
-                    'activematches' => ['admin/Invoices*'],
+                    'order'         => 101,
+                    'activematches' => 'admin/invoices*',
+                    'permission'    => [],
+                ])
+                ->link->attr([
+                    'class' => 'nav-link',
+                ]);
+            $articles_menu->add('<i class="nav-icon fa fa-shopping-bag"></i> ' . __('Cancelled'), [
+                'route' => 'backend.invoices.view',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 101,
+                    'activematches' => 'admin/invoices*',
+                    'permission'    => [],
+                ])
+                ->link->attr([
+                    'class' => 'nav-link',
+                ]);
+            // Submenu: Categories
+            $articles_menu->add('<i class="nav-icon fas fa-sitemap"></i> ' . __('Completed'), [
+                'route' => 'backend.invoices.view',
+                'class' => 'nav-item',
+            ])
+                ->data([
+                    'order'         => 101,
+                    'activematches' => 'admin/cancelled*',
                     'permission'    => [],
                 ])
                 ->link->attr([

@@ -21,4 +21,6 @@ Route::group(['namespace' => '\Modules\Invoices\Http\Controllers', 'as' => 'back
     Route::get('invoices/create', ['as' => "invoices.add", 'uses' => 'InvoicesController@create']);
     Route::get('invoices/{id}/fetch', ['as' => "invoices.fetch", 'uses' => 'InvoicesController@fetch']);
     Route::get('invoices/{current}/search', ['as' => "invoices.search", 'uses' => 'InvoicesController@search']);
+    Route::post('invoices/add_invoice', ['as' => "invoice.create", 'uses' => 'InvoicesController@store']);
+    Route::get('invoices/{id}/invoiceDetails', ['as' => 'invoice.details', 'uses' => 'InvoicesController@showDetails']);
 });

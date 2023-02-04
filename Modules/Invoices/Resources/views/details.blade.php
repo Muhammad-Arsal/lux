@@ -25,54 +25,71 @@
                 </x-slot>
             </x-backend.section-header>
 
+            <?php
+            $collectedData = \DB::table('orders')
+                ->where('id', $id)
+                ->first();
+            $member_name = \DB::table('customers')
+                ->where('id', $collectedData->member_id)
+                ->first();
+            $variants = \DB::table('order_details')
+                ->where('order_id', $id)
+                ->get();
+            ?>
             <div class="row" style="margin-top: 1em;">
-                <div class="table-responsive">
+                <div class="mb-3 border border-2 p-2 mb-2">
+                    <div class="row">
+                        <div class="col-6">
+                            <span class="fs-3">Invoice No.</span>
+                            <span style="border-bottom: 1px solid black;" class="ms-2 fs-4">{{ $collectedData->id }}</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="fs-3">Name:</span>
+                            <span style="border-bottom: 1px solid black;"
+                                class="ms-2 fs-4">{{ $member_name->first_name . ' ' . $member_name->last_name }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive border border-2 p-2">
                     <table class="table table-bordered">
-                        <thead>
+                        <thead class="bg-secondary">
                             <tr>
-                                <th>Date</th>
-                                <th>Invoice No.</th>
-                                <th>Name</th>
-                                <th>Bill No.</th>
-                                <th>Status</th>
-                                <th>Option</th>
+                                <th>Sr No.</th>
+                                <th>Product</th>
+                                <th>Size</th>
+                                <th>Total Quantity</th>
+                                <th>Price</th>
+                                <th>Total</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php
-                            $collected_data = \DB::table('orders')
-                                ->where([
-                                    'order_type' => 'invoice',
-                                    'status' => 'confirm',
-                                ])
-                                ->get();
-                            ?>
-                            @forelse ($collected_data as $item)
+                            <?php $i = 1; ?>
+                            @forelse ($variants as $item)
                                 <?php
-                                $member_name = \DB::table('customers')
-                                    ->where('id', $item->member_id)
+                                $variant_name = \DB::table('product_variants')
+                                    ->where('id', $item->variant_id)
                                     ->first();
                                 ?>
                                 <tr>
-                                    <td>{{ date('m-d-Y', $item->time) }}</td>
-                                    <td>{{ $item->id }}</td>
-                                    <td>{{ $member_name->first_name . ' ' . $member_name->last_name }}</td>
-                                    <td>{{ $item->bill }}</td>
-                                    <td><?php if ($item->paid == 'no') {
-                                        echo 'Unpaid';
+                                    <td>{{ $i++ }}</td>
+                                    <td>{{ $variant_name->name }}</td>
+                                    <td><?php if ($variant_name->size) {
+                                        echo $variant_name->size;
                                     } else {
-                                        echo 'paid';
+                                        echo '--';
                                     } ?></td>
-                                    <td>
-                                        <a href=""><u>Cancel</u></a>
-                                        <a href=""><u>Complete</u></a>
-                                        <a href="{{ route('backend.invoice.details', $item->id) }}"> <u>Details</u></a>
-                                        <a href=""><u>Paid</u></a>
-                                    </td>
+                                    <td>{{ $item->qty_sold }}</td>
+                                    <td>{{ $item->price }}</td>
+                                    <td>{{ $item->total }}</td>
                                 </tr>
                             @empty
                             @endforelse
-
+                            <tr>
+                                <td colspan="4" class="text-end">Bill Amount</td>
+                                <td class="text-center bg-secondary" colspan="2">
+                                    <b>{{ $collectedData->total . "$" }}</b>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

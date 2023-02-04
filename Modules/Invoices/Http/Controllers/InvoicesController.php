@@ -6,6 +6,8 @@ use Hamcrest\Type\IsNumeric;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\Invoices\Entities\Orders;
+use Modules\invoices\Entities\OrderDetails;
 
 class InvoicesController extends Controller
 {
@@ -53,7 +55,43 @@ class InvoicesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $billCalculation = 0;
+        $j = 0;
+        foreach ($request['price'] as $items) {
+            $billCalculation += $items * $request['qty'][$j];
+            $j++;
+        }
+        $orders = new Orders();
+        $orders->member_id = $request->member;
+        $orders->time = time();
+        $orders->order_type = 'invoice';
+        $orders->bill = $billCalculation;
+        $orders->total = $billCalculation;
+        $orders->status = 'confirm';
+        $orders->paid = 'no';
+
+        $orders->save();
+
+        $i = 0;
+        if ($request->price) {
+            foreach ($request->price as $items) {
+                $order_details = new OrderDetails();
+
+                $order_details->order_id = $orders->id;
+                $order_details->variant_id = $request['ids'][$i];
+                $order_details->price = $items;
+
+                $dp = \DB::table('product_variants')->where('id', $request['ids'][$i])->first();
+
+                $order_details->discount_price = $dp->discount_price;
+                $order_details->qty_sold = $request['qty'][$i];
+                $order_details->total = $request['qty'][$i] * $request['price'][$i];
+                $order_details->save();
+
+                ++$i;
+            }
+            return redirect()->route('backend.invoices.view');
+        }
     }
 
     /**
@@ -61,9 +99,9 @@ class InvoicesController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function show($id)
+    public function showDetails($id)
     {
-        return view('invoices::show');
+        return view('invoices::details')->with(compact('id'));
     }
 
     /**
